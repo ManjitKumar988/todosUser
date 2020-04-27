@@ -3,7 +3,7 @@ import './App.css';
 
 import { Layout, Menu } from 'antd';
 
-import { Route, Switch, Link } from 'react-router-dom';
+import { Route, Switch, Link, Redirect } from 'react-router-dom';
 
 import Todos from './Components/Todos';
 import Users from './Components/Users';
@@ -14,7 +14,6 @@ function App() {
   let [selected, setSelected] = React.useState('1');
   let handleSelected = (e) => {
     setSelected(e.key);
-    console.log(e);
   }
   return (
     <Layout className='layout'>
@@ -31,7 +30,9 @@ function App() {
         </Menu>
         <Switch>
           <Route path='/' strict exact component={Todos} />
-          <Route path='/user' strict exact component={Users} />
+          <Route path='/user' strict exact render={() => (
+            selected !== '1' ? <Users /> : <Redirect to='/' />
+          )} />
         </Switch>
         <ModalDisplay />
     </Layout>

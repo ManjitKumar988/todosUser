@@ -4,18 +4,7 @@ import {connect} from 'react-redux';
 
 import { Button,Table, Input, Popconfirm, Form } from 'antd';
 
-import { showTodoModal } from '../store/Actions/todoThunk';
-
-const originalData = [];
-
-for(let i=0;i<20;i++){
-    originalData.push({
-        key : i.toString(),
-        todo : `todo ${i}`,
-        dateAdded: new Date().toLocaleString()
-    });
-}
-
+import { showTodoModal, handleDelete, handleSave } from '../store/Actions/todoThunk';
 
 
 class Todos extends React.Component{
@@ -23,15 +12,10 @@ class Todos extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            data: originalData,
+            data: [],
             editingKey : ''
         }
     }
-
-    handleDelete = key => {
-        const dataSource = [...this.state.data];
-        this.setState({ ...this.state,data: dataSource.filter(item => item.key !== key) });
-    };
 
     EditableCell = ({
         editing,
@@ -91,16 +75,17 @@ class Todos extends React.Component{
         const save = async key => {
             try{
                 const row = await form.validateFields();
-                const newData = [...this.state.data];
+                const newData = [...this.props.todos];
                 const index = newData.findIndex(item => key === item.key);
 
                 if(index > -1){
                     const item = newData[index];
                     newData.splice(index,1,{...item,...row});
                     this.setState({
-                        data : newData,
+                        
                         editingKey : ''
                     });
+                    this.props.handleSave(newData);
                 } else {
                     newData.push(row);
                     this.setState({
@@ -145,7 +130,7 @@ class Todos extends React.Component{
                     ) : (
                         <>
                         <a disabled = {this.state.editingKey !== ''} onClick={() => edit(record)}>Edit</a> | {' '}
-                        <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.key)}>
+                        <Popconfirm title="Sure to delete?" onConfirm={() => this.props.handleDelete(record.key)}>
                             <a>Delete</a>
                         </Popconfirm>
                         </>
@@ -179,7 +164,7 @@ class Todos extends React.Component{
                     },
                     }}
                     bordered
-                    dataSource={this.state.data}
+                    dataSource={this.props.todos}
                     columns={mergedColumns}
                     rowClassName="editable-row"
                     pagination={{
@@ -207,7 +192,9 @@ const mapStateToProps = (state) => ({
 })
 
 const mapActionToProps = {
-    showTodoModal
+    showTodoModal,
+    handleDelete,
+    handleSave
 }
 
 export default connect(mapStateToProps,mapActionToProps)(Todos);

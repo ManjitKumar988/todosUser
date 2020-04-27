@@ -13,9 +13,9 @@ export const todoForm = (
         <Form.Item
             label='Date Added'
             name='dateAdded'
-            rules={[{required:true, message:'Please Enter ToDo'}]}
+            rules={[{required:true, message:'Please Enter Date'}]}
         >
-            <DatePicker />
+            <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
         </Form.Item>
     </>
 )
